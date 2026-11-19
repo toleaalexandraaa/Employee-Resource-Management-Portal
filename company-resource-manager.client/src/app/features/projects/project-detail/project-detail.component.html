@@ -1,0 +1,220 @@
+<app-page-header [title]="project?.name ?? ('PROJECTS.PROJECTS' | translate)"
+                 [subtitle]="'PROJECTS.PROJECTS_SUBTITLE' | translate">
+  @if (riskScore) {
+  <mat-chip [color]="riskColors[riskScore.riskLevel]" [highlighted]="riskScore.riskLevel !== 'OnTrack'"
+            [matTooltip]="'Risk score: ' + riskScore.riskScore + '/100 | Overdue tasks: ' + riskScore.overdueTaskCount"
+            style="margin-right:8px">
+    {{ riskLabels[riskScore.riskLevel] }}
+  </mat-chip>
+  }
+  <button mat-icon-button [routerLink]="['/projects', projectId, 'edit']" [matTooltip]="'COMMON.EDIT' | translate">
+    <mat-icon>edit</mat-icon>
+  </button>
+</app-page-header>
+
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
+  <mat-tab [label]="'PROJECTS.KANBAN' | translate">
+    <div style="padding-top:16px">
+      <app-kanban-board #kanbanBoard [projectId]="projectId"></app-kanban-board>
+    </div>
+  </mat-tab>
+
+  <mat-tab [label]="'PROJECTS.TASKS' | translate">
+    <div style="padding-top:16px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button mat-flat-button color="primary" (click)="showTaskForm = !showTaskForm">
+          <mat-icon>add</mat-icon> {{ 'PROJECTS.ADD_TASK' | translate }}
+        </button>
+      </div>
+
+      @if (showTaskForm) {
+      <mat-card style="margin-bottom:16px">
+        <mat-card-content>
+          <form [formGroup]="taskForm" (ngSubmit)="saveTask()">
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>{{ 'PROJECTS.TASK_TITLE' | translate }}</mat-label>
+                <input matInput formControlName="title" />
+                <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'PROJECTS.PRIORITY' | translate }}</mat-label>
+                <mat-select formControlName="priority">
+                  <mat-option *ngFor="let p of priorities" [value]="p">{{ p }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Est. Hours</mat-label>
+                <input matInput type="number" formControlName="estimatedHours" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'PROJECTS.ASSIGNEE' | translate }}</mat-label>
+                <mat-select formControlName="assignedToEmployeeId">
+                  <mat-option [value]="null">— Unassigned —</mat-option>
+                  <mat-option *ngFor="let e of employees" [value]="e.id">{{ e.fullName }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'PROJECTS.END_DATE' | translate }}</mat-label>
+                <input matInput [matDatepicker]="duePicker" formControlName="dueDate" />
+                <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+                <mat-datepicker #duePicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'PROJECTS.DESCRIPTION' | translate }}</mat-label>
+              <textarea matInput formControlName="description" rows="2"></textarea>
+            </mat-form-field>
+            <div style="display:flex;gap:8px">
+              <button mat-flat-button color="primary" type="submit">{{ 'COMMON.SAVE' | translate }}</button>
+              <button mat-button type="button" (click)="showTaskForm = false">{{ 'COMMON.CANCEL' | translate }}</button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <mat-card>
+        <mat-card-content>
+          <table mat-table [dataSource]="tasks">
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.TASK_TITLE' | translate }}</th>
+              <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+            </ng-container>
+            <ng-container matColumnDef="assignedToEmployeeName">
+              <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.ASSIGNEE' | translate }}</th>
+              <td mat-cell *matCellDef="let t">{{ t.assignedToEmployeeName ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.PRIORITY' | translate }}</th>
+              <td mat-cell *matCellDef="let t">
+                <mat-chip [color]="priorityColors[t.priority]" [highlighted]="t.priority !== 'Low'">
+                  {{
+ t.priority
+                  }}
+                </mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+              <td mat-cell *matCellDef="let t">{{ t.status }}</td>
+            </ng-container>
+            <ng-container matColumnDef="dueDate">
+              <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.END_DATE' | translate }}</th>
+              <td mat-cell *matCellDef="let t">{{ t.dueDate ?? '—' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+              <td mat-cell *matCellDef="let t">
+                <button mat-icon-button color="warn" (click)="deleteTask(t)" [matTooltip]="'COMMON.DELETE' | translate">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="taskColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: taskColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="taskColumns.length" style="text-align:center;padding:32px">
+                {{ 'PROJECTS.NO_TASKS' | translate }}
+              </td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Membri">
+    <div style="padding-top:16px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+        <button mat-flat-button color="primary" (click)="showMemberForm = !showMemberForm">
+          <mat-icon>add</mat-icon> Adaugă Membru
+        </button>
+      </div>
+
+      @if (showMemberForm) {
+      <mat-card style="margin-bottom:16px">
+        <mat-card-content>
+          <form [formGroup]="memberForm" (ngSubmit)="saveMember()">
+            <div class="form-row">
+              <mat-form-field appearance="outline" style="flex:2">
+                <mat-label>Angajat</mat-label>
+                <mat-select formControlName="employeeId">
+                  <mat-option *ngFor="let e of employees" [value]="e.id">{{ e.fullName }}</mat-option>
+                </mat-select>
+                <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Rol (ex: Developer, Manager)</mat-label>
+                <input matInput formControlName="role" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ore/Săpt.</mat-label>
+                <input matInput type="number" formControlName="allocatedHoursPerWeek" />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Data Alocării</mat-label>
+                <input matInput [matDatepicker]="joinPicker" formControlName="joinDate" />
+                <mat-datepicker-toggle matSuffix [for]="joinPicker"></mat-datepicker-toggle>
+                <mat-datepicker #joinPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button mat-flat-button color="primary" type="submit">{{ 'COMMON.SAVE' | translate }}</button>
+              <button mat-button type="button" (click)="showMemberForm = false">
+                {{
+ 'COMMON.CANCEL' | translate
+                }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+      }
+
+      <mat-card>
+        <mat-card-content>
+          <table mat-table [dataSource]="members">
+            <ng-container matColumnDef="employeeName">
+              <th mat-header-cell *matHeaderCellDef>Nume Angajat</th>
+              <td mat-cell *matCellDef="let m">{{ m.employeeName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Rol</th>
+              <td mat-cell *matCellDef="let m">{{ m.role }}</td>
+            </ng-container>
+            <ng-container matColumnDef="joinDate">
+              <th mat-header-cell *matHeaderCellDef>Data Alocării</th>
+              <td mat-cell *matCellDef="let m">{{ m.joinDate }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+              <td mat-cell *matCellDef="let m">
+                <button mat-icon-button color="warn" (click)="deleteMember(m)" matTooltip="Șterge membru">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="memberColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: memberColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" [attr.colspan]="memberColumns.length" style="text-align:center;padding:32px">
+                Niciun membru alocat acestui proiect.
+              </td>
+            </tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </mat-tab>
+
+  <mat-tab [label]="'PROJECTS.TIME_ENTRIES' | translate">
+    <div style="padding-top:16px">
+      <app-time-entry-list [projectId]="projectId"></app-time-entry-list>
+    </div>
+  </mat-tab>
+</mat-tab-group>

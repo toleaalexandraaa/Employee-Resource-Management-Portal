@@ -1,0 +1,99 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load revenue data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- Outstanding receivables KPI -->
+    <div class="kpi-row">
+      <mat-card class="kpi-card kpi-outstanding">
+        <mat-card-content>
+          <div class="kpi-value">{{ data.totalOutstanding | number: '1.0-0' }}</div>
+          <div class="kpi-label">Total Outstanding (RON)</div>
+          <div class="kpi-sub">Sent + Partially Paid + Overdue</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="kpi-card kpi-status" *ngFor="let s of data.outstandingByStatus">
+        <mat-card-content>
+          <div class="kpi-value kpi-value--sm">{{ s.amount | number: '1.0-0' }}</div>
+          <div class="kpi-label">{{ s.status }}</div>
+          <div class="kpi-sub">RON outstanding</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="charts-grid">
+      <mat-card class="chart-card chart-card--wide">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.REVENUE' | translate }} Trend</mat-card-title>
+          <mat-card-subtitle>Paid invoices — last 12 months (RON)</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #trendCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.REVENUE' | translate }} by Client</mat-card-title>
+          <mat-card-subtitle>Top 10 clients by paid invoices (RON)</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content chart-content--tall">
+          <div *ngIf="data.revenueByClient.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No paid invoices found</p>
+          </div>
+          <canvas #clientCanvas *ngIf="data.revenueByClient.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.REVENUE' | translate }} by Industry</mat-card-title>
+          <mat-card-subtitle>Paid invoice totals by client industry</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div *ngIf="data.revenueByIndustry.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No industry data</p>
+          </div>
+          <canvas #industryCanvas *ngIf="data.revenueByIndustry.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Invoice aging report -->
+    <mat-card class="aging-card">
+      <mat-card-header>
+        <mat-card-title>Invoice Aging Report</mat-card-title>
+        <mat-card-subtitle>Unpaid invoices (Sent, Partially Paid, Overdue) grouped by age</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="data.agingBuckets.every(b => b.count === 0)" class="empty-state-inline">
+          <mat-icon color="primary">check_circle_outline</mat-icon>
+          <span>No outstanding invoices</span>
+        </div>
+        <div class="aging-grid" *ngIf="data.agingBuckets.some(b => b.count > 0)">
+          <div class="aging-bucket" *ngFor="let b of data.agingBuckets" [class.aging-bucket--empty]="b.count === 0">
+            <div class="aging-bar-wrap">
+              <div
+                class="aging-bar-fill"
+                [style.backgroundColor]="agingBarColor(b.bucket)"
+                [style.height.%]="b.count === 0 ? 0 : 100"
+              ></div>
+            </div>
+            <div class="aging-label">{{ b.bucket }}</div>
+            <div class="aging-count">{{ b.count }} invoice{{ b.count !== 1 ? 's' : '' }}</div>
+            <div class="aging-amount">{{ b.totalAmount | number: '1.0-0' }} RON</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

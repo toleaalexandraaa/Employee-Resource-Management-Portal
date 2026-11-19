@@ -1,0 +1,72 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load project health data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- On-time KPI card -->
+    <div class="kpi-row">
+      <mat-card class="kpi-card kpi-ontime">
+        <mat-card-content>
+          <div class="kpi-value">{{ onTimeRate }}%</div>
+          <div class="kpi-label">{{ 'ANALYTICS.COMPLETION_RATE' | translate }}</div>
+          <div class="kpi-sub">{{ data.onTimeCount }} / {{ data.completedCount }} completed projects</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-late" *ngIf="data.lateProjectNames.length > 0">
+        <mat-card-content>
+          <div class="kpi-value kpi-value--warn">{{ data.lateProjectNames.length }}</div>
+          <div class="kpi-label">Late Projects</div>
+          <div class="kpi-sub">{{ data.lateProjectNames.join(', ') }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts grid -->
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'PROJECTS.PROJECTS' | translate }} by {{ 'COMMON.STATUS' | translate }}</mat-card-title>
+          <mat-card-subtitle>Current distribution</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #statusCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Estimated vs Actual Duration</mat-card-title>
+          <mat-card-subtitle>Completed projects — green = on time, red = late</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div *ngIf="data.durationScatter.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No completed projects yet</p>
+          </div>
+          <canvas #scatterCanvas *ngIf="data.durationScatter.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card chart-card--wide">
+        <mat-card-header>
+          <mat-card-title>Budget Variance per Project</mat-card-title>
+          <mat-card-subtitle>Actual − Estimated (RON) — red = over budget, green = under</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content chart-content--tall">
+          <div *ngIf="data.budgetVariances.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No projects found</p>
+          </div>
+          <canvas #budgetCanvas *ngIf="data.budgetVariances.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+</div>

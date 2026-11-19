@@ -1,0 +1,84 @@
+@if (loading) {
+  <div style="text-align:center;padding:48px">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+}
+
+@if (error) {
+  <mat-card>
+    <mat-card-content>
+      <p style="color:red">Failed to load client segment data.</p>
+    </mat-card-content>
+  </mat-card>
+}
+
+@if (!loading && !error && data) {
+  @if (!data.hasSufficientData) {
+    <mat-card>
+      <mat-card-content>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0">
+          <mat-icon color="warn">info</mat-icon>
+          <span>{{ data.message }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (data.hasSufficientData) {
+    <p style="font-size:12px;color:#888;margin-bottom:8px">{{ data.message }}</p>
+
+    <mat-card style="margin-bottom:24px">
+      <mat-card-header>
+        <mat-card-title>{{ 'ANALYTICS.CLIENT_SEGMENTS' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div style="position:relative;height:360px">
+          <canvas #bubbleCanvas></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'CRM.CLIENTS' | translate }} {{ 'ANALYTICS.SEGMENT' | translate }} Details</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="data.clients">
+          <ng-container matColumnDef="clientName">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CRM.CLIENTS' | translate }}</th>
+            <td mat-cell *matCellDef="let c">
+              <a [routerLink]="['/crm/clients', c.clientId]"
+                 style="color:inherit;text-decoration:none;font-weight:500">{{ c.clientName }}</a>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="segmentLabel">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ANALYTICS.SEGMENT' | translate }}</th>
+            <td mat-cell *matCellDef="let c">
+              <mat-chip [color]="segmentColor(c.clusterLabel)" [highlighted]="true">
+                {{ c.clusterLabel }}
+              </mat-chip>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="totalRevenue">
+            <th mat-header-cell *matHeaderCellDef>{{ 'ANALYTICS.TOTAL_REVENUE' | translate }}</th>
+            <td mat-cell *matCellDef="let c">{{ c.totalRevenue | number:'1.0-0' }} RON</td>
+          </ng-container>
+          <ng-container matColumnDef="projectCount">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.PROJECTS' | translate }}</th>
+            <td mat-cell *matCellDef="let c">{{ c.projectCount | number:'1.0-0' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="avgPaymentDelayDays">
+            <th mat-header-cell *matHeaderCellDef>Avg Payment Delay</th>
+            <td mat-cell *matCellDef="let c">{{ c.avgPaymentDelayDays | number:'1.0-1' }} days</td>
+          </ng-container>
+          <ng-container matColumnDef="openInvoiceAmount">
+            <th mat-header-cell *matHeaderCellDef>Open Invoices</th>
+            <td mat-cell *matCellDef="let c">{{ c.openInvoiceAmount | number:'1.0-0' }} RON</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+}

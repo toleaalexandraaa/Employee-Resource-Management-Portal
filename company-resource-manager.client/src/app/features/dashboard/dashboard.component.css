@@ -1,0 +1,165 @@
+.loading-container {
+        display: flex;
+        justify-content: center;
+        padding: 64px 0;
+      }
+
+      .dashboard-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* KPI Grid */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .kpi-card {
+        cursor: pointer;
+        border-radius: 12px !important;
+        overflow: hidden;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        border-top: 4px solid transparent;
+      }
+      .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+      }
+      .kpi-employees { border-top-color: #3f51b5; }
+      .kpi-projects  { border-top-color: #9c27b0; }
+      .kpi-clients   { border-top-color: #00897b; }
+      .kpi-leaves    { border-top-color: #f57c00; }
+
+      .kpi-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 4px 4px;
+      }
+      .kpi-number {
+        font-size: 2.6rem;
+        font-weight: 700;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.87);
+      }
+      .kpi-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(0, 0, 0, 0.54);
+        margin-top: 4px;
+      }
+      .kpi-sub {
+        font-size: 0.8rem;
+        color: rgba(0, 0, 0, 0.38);
+        margin-top: 2px;
+      }
+      .kpi-bg-icon {
+        font-size: 56px !important;
+        width: 56px !important;
+        height: 56px !important;
+        opacity: 0.1;
+        color: #000;
+      }
+      .kpi-employees .kpi-bg-icon { opacity: 0.15; color: #3f51b5; }
+      .kpi-projects  .kpi-bg-icon { opacity: 0.15; color: #9c27b0; }
+      .kpi-clients   .kpi-bg-icon { opacity: 0.15; color: #00897b; }
+      .kpi-leaves    .kpi-bg-icon { opacity: 0.15; color: #f57c00; }
+
+      /* Panels */
+      .panels-grid {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 16px;
+      }
+      .panels-grid.single-panel {
+        grid-template-columns: 1fr;
+      }
+      @media (max-width: 768px) {
+        .panels-grid { grid-template-columns: 1fr; }
+      }
+
+      .panel-card {
+        border-radius: 12px !important;
+      }
+      .panel-card mat-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 0;
+      }
+      .view-all-btn {
+        margin-left: auto;
+        font-size: 0.8rem;
+      }
+
+      /* List rows */
+      .list-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+        transition: background 0.1s;
+        border-radius: 4px;
+      }
+      .list-row:last-child { border-bottom: none; }
+      .list-row:hover { background: rgba(0, 0, 0, 0.03); }
+
+      .list-row-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .row-title {
+        font-weight: 500;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .row-sub {
+        font-size: 0.78rem;
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      .empty-state {
+        color: rgba(0, 0, 0, 0.38);
+        font-style: italic;
+        padding: 16px 0;
+        text-align: center;
+        font-size: 0.85rem;
+      }
+
+      /* Status badges */
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-left: 8px;
+      }
+
+      /* Project statuses */
+      .proj-planning   { background: #e3f2fd; color: #1565c0; }
+      .proj-active     { background: #e8f5e9; color: #2e7d32; }
+      .proj-onhold     { background: #fff8e1; color: #ef6c00; }
+      .proj-completed  { background: #ede7f6; color: #4527a0; }
+      .proj-cancelled  { background: #fce4ec; color: #b71c1c; }
+
+      /* Lead stages */
+      .lead-new          { background: #e3f2fd; color: #1565c0; }
+      .lead-contacted    { background: #e8eaf6; color: #283593; }
+      .lead-qualified    { background: #e0f7fa; color: #00695c; }
+      .lead-proposalsent { background: #fff8e1; color: #ef6c00; }
+      .lead-won          { background: #e8f5e9; color: #2e7d32; }
+      .lead-lost         { background: #fce4ec; color: #b71c1c; }

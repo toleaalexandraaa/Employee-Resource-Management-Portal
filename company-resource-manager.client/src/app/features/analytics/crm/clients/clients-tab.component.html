@@ -1,0 +1,87 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load client data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- Charts grid -->
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'CRM.CLIENTS' | translate }} by {{ 'COMMON.STATUS' | translate }}</mat-card-title>
+          <mat-card-subtitle>Active / Inactive / Prospect</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #statusCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'CRM.CLIENTS' | translate }} by {{ 'CRM.INDUSTRY' | translate }}</mat-card-title>
+          <mat-card-subtitle>Number of clients per industry</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div *ngIf="data.clientsByIndustry.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No industry data</p>
+          </div>
+          <canvas #industryCanvas *ngIf="data.clientsByIndustry.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Client Acquisition Trend</mat-card-title>
+          <mat-card-subtitle>New clients per quarter — last 2 years</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #acquisitionCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Top clients table -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'ANALYTICS.CLIENT_ANALYSIS' | translate }}</mat-card-title>
+        <mat-card-subtitle>Ranked by number of associated projects</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="data.topClients.length === 0" class="empty-state-inline">
+          <mat-icon>info_outline</mat-icon>
+          <span>No clients found</span>
+        </div>
+        <table mat-table [dataSource]="data.topClients" class="clients-table" *ngIf="data.topClients.length > 0">
+          <ng-container matColumnDef="clientName">
+            <th mat-header-cell *matHeaderCellDef>{{ 'CRM.CLIENTS' | translate }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.clientName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="projectCount">
+            <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.PROJECTS' | translate }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="project-count">{{ row.projectCount }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="totalInvoiced">
+            <th mat-header-cell *matHeaderCellDef>Total Invoiced (RON)</th>
+            <td mat-cell *matCellDef="let row">{{ row.totalInvoiced | number: '1.0-0' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="totalPaid">
+            <th mat-header-cell *matHeaderCellDef>Total Paid (RON)</th>
+            <td mat-cell *matCellDef="let row" class="paid-cell">
+              {{ row.totalPaid | number: '1.0-0' }}
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

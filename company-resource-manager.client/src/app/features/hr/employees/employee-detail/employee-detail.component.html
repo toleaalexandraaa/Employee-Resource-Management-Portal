@@ -1,0 +1,152 @@
+<app-page-header
+  [title]="employee ? (employee.firstName + ' ' + employee.lastName) : 'Employee'"
+  subtitle="Employee details and contracts"
+>
+  <button
+    mat-icon-button
+    [routerLink]="['/hr/employees', employeeId, 'edit']"
+    matTooltip="Edit Employee"
+  >
+    <mat-icon fontIcon="edit"></mat-icon>
+  </button>
+</app-page-header>
+
+@if (employee) {
+  <mat-card style="margin-bottom:16px">
+    <mat-card-content>
+      <div class="form-row">
+        <div><strong>Department:</strong> {{ employee.department }}</div>
+        <div><strong>Job Title:</strong> {{ employee.jobTitle }}</div>
+        <div><strong>Email:</strong> {{ employee.workEmail }}</div>
+        <div><strong>Hire Date:</strong> {{ employee.hireDate | date: 'mediumDate' }}</div>
+        <div><strong>Manager:</strong> {{ employee.managerName ?? '—' }}</div>
+        <div>
+          <strong>Status:</strong>
+          <mat-chip [color]="employee.isActive ? 'primary' : undefined" [highlighted]="employee.isActive" style="margin-left:6px">
+            {{ employee.isActive ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <h2 style="margin:0">Employment Contracts</h2>
+  <button mat-flat-button color="primary" (click)="openAddForm()">
+    <mat-icon>add</mat-icon> Add Contract
+  </button>
+</div>
+
+@if (showContractForm) {
+  <mat-card style="margin-bottom:16px">
+    <mat-card-header>
+      <mat-card-title>{{ editingContract ? 'Edit Contract' : 'New Contract' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="contractForm" (ngSubmit)="saveContract()">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Contract Type</mat-label>
+            <mat-select formControlName="contractType">
+              @for (type of contractTypes; track type) {
+                <mat-option [value]="type">{{ type }}</mat-option>
+              }
+            </mat-select>
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Start Date</mat-label>
+            <input matInput type="date" formControlName="startDate" />
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>End Date</mat-label>
+            <input matInput type="date" formControlName="endDate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Gross Salary</mat-label>
+            <input matInput type="number" formControlName="grossSalary" />
+            <mat-error>Required, must be ≥ 0</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <input matInput formControlName="currency" />
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox formControlName="isActive" style="margin-bottom:12px">Active</mat-checkbox>
+
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button mat-flat-button color="primary" type="submit">
+            {{ editingContract ? 'Save' : 'Create' }}
+          </button>
+          <button mat-button type="button" (click)="cancel()">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+<mat-card>
+  <mat-card-content>
+    <table mat-table [dataSource]="contracts">
+      <ng-container matColumnDef="contractType">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let c">{{ c.contractType }}</td>
+      </ng-container>
+      <ng-container matColumnDef="startDate">
+        <th mat-header-cell *matHeaderCellDef>Start Date</th>
+        <td mat-cell *matCellDef="let c">{{ c.startDate | date: 'mediumDate' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="endDate">
+        <th mat-header-cell *matHeaderCellDef>End Date</th>
+        <td mat-cell *matCellDef="let c">{{ c.endDate ? (c.endDate | date: 'mediumDate') : '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="grossSalary">
+        <th mat-header-cell *matHeaderCellDef>Gross Salary</th>
+        <td mat-cell *matCellDef="let c">{{ c.grossSalary | number: '1.2-2' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="currency">
+        <th mat-header-cell *matHeaderCellDef>Currency</th>
+        <td mat-cell *matCellDef="let c">{{ c.currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let c">
+          <mat-chip [color]="c.isActive ? 'primary' : undefined" [highlighted]="c.isActive">
+            {{ c.isActive ? 'Active' : 'Inactive' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let c">
+          <button mat-icon-button (click)="editContract(c)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteContract(c)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="contractColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: contractColumns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td
+          class="mat-cell"
+          [attr.colspan]="contractColumns.length"
+          style="text-align:center;padding:32px"
+        >
+          No contracts yet.
+        </td>
+      </tr>
+    </table>
+  </mat-card-content>
+</mat-card>

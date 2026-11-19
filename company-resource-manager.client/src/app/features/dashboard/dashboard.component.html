@@ -1,0 +1,120 @@
+
+<app-page-header [title]="greetingKey | translate" [subtitle]="subtitleKey | translate"></app-page-header>
+
+@if (loading) {
+<div class="loading-container">
+  <mat-spinner diameter="48"></mat-spinner>
+</div>
+} @else {
+<div class="dashboard-container">
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    @if (canSeeEmployees) {
+    <mat-card class="kpi-card kpi-employees" routerLink="/hr/employees">
+      <mat-card-content>
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ totalEmployees }}</div>
+            <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_EMPLOYEES' | translate }}</div>
+            <div class="kpi-sub">{{ activeEmployees }} {{ 'DASHBOARD.ACTIVE' | translate }}</div>
+          </div>
+          <mat-icon class="kpi-bg-icon">people</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+
+    <mat-card class="kpi-card kpi-projects" routerLink="/projects">
+      <mat-card-content>
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ activeProjects }}</div>
+            <div class="kpi-label">{{ 'ANALYTICS.ACTIVE_PROJECTS' | translate }}</div>
+            <div class="kpi-sub">{{ totalProjects }} {{ 'DASHBOARD.TOTAL' | translate }}</div>
+          </div>
+          <mat-icon class="kpi-bg-icon">rocket_launch</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (canSeeClients) {
+    <mat-card class="kpi-card kpi-clients" routerLink="/crm/clients">
+      <mat-card-content>
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ activeClients }}</div>
+            <div class="kpi-label">{{ 'DASHBOARD.ACTIVE_CLIENTS' | translate }}</div>
+            <div class="kpi-sub">{{ totalClients }} {{ 'DASHBOARD.TOTAL' | translate }}</div>
+          </div>
+          <mat-icon class="kpi-bg-icon">business</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+
+    @if (canSeePendingLeaves) {
+    <mat-card class="kpi-card kpi-leaves" routerLink="/hr/leave-requests">
+      <mat-card-content>
+        <div class="kpi-body">
+          <div>
+            <div class="kpi-number">{{ pendingLeaves }}</div>
+            <div class="kpi-label">{{ 'DASHBOARD.PENDING_LEAVES' | translate }}</div>
+            <div class="kpi-sub">{{ 'DASHBOARD.PENDING_REVIEW' | translate }}</div>
+          </div>
+          <mat-icon class="kpi-bg-icon">event_busy</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+
+  <!-- Detail Panels -->
+  <div class="panels-grid" [class.single-panel]="!canSeeLeads">
+    <!-- Recent Projects -->
+    <mat-card class="panel-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'DASHBOARD.RECENT_PROJECTS' | translate }}</mat-card-title>
+        <a mat-button color="primary" routerLink="/projects" class="view-all-btn">{{ 'COMMON.VIEW_ALL' | translate }}</a>
+      </mat-card-header>
+      <mat-card-content>
+        @if (recentProjects.length === 0) {
+        <div class="empty-state">{{ 'DASHBOARD.NO_PROJECTS' | translate }}</div>
+        }
+        @for (p of recentProjects; track p.id) {
+        <div class="list-row" [routerLink]="['/projects', p.id]">
+          <div class="list-row-main">
+            <span class="row-title">{{ p.name }}</span>
+            <span class="row-sub">{{ p.clientName ?? ('DASHBOARD.NO_CLIENT' | translate) }} &middot; {{ p.memberCount }} {{ 'DASHBOARD.MEMBERS' | translate }}</span>
+          </div>
+          <span class="badge" [ngClass]="'proj-' + p.status.toLowerCase()">{{ p.status }}</span>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Lead Pipeline -->
+    @if (canSeeLeads) {
+    <mat-card class="panel-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'DASHBOARD.LEAD_PIPELINE' | translate }}</mat-card-title>
+        <a mat-button color="primary" routerLink="/crm/leads" class="view-all-btn">{{ 'COMMON.VIEW_ALL' | translate }}</a>
+      </mat-card-header>
+      <mat-card-content>
+        @if (recentLeads.length === 0) {
+        <div class="empty-state">{{ 'DASHBOARD.NO_LEADS' | translate }}</div>
+        }
+        @for (lead of recentLeads; track lead.id) {
+        <div class="list-row" routerLink="/crm/leads">
+          <div class="list-row-main">
+            <span class="row-title">{{ lead.companyName }}</span>
+            <span class="row-sub">{{ lead.estimatedValue != null ? formatCurrency(lead.estimatedValue) : ('DASHBOARD.NO_ESTIMATE' | translate) }}</span>
+          </div>
+          <span class="badge" [ngClass]="'lead-' + lead.stage.toLowerCase()">{{ lead.stage }}</span>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+    }
+  </div>
+</div>
+}

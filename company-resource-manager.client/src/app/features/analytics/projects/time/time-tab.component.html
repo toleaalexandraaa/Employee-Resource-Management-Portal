@@ -1,0 +1,81 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load time tracking data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- Hours by project (wide) -->
+    <div class="charts-grid">
+      <mat-card class="chart-card chart-card--wide">
+        <mat-card-header>
+          <mat-card-title>{{ 'PROJECTS.HOURS_LOGGED' | translate }} vs Estimated — by Project</mat-card-title>
+          <mat-card-subtitle>All projects (sum of task estimated hours vs time entries)</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div *ngIf="data.hoursByProject.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No project data found</p>
+          </div>
+          <canvas #hoursCanvas *ngIf="data.hoursByProject.length > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Hours by Day of Week</mat-card-title>
+          <mat-card-subtitle>Last 12 months — distribution across Mon–Sun</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #dayCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Weekly Hours Trend</mat-card-title>
+          <mat-card-subtitle>Total hours logged per week — last 8 weeks</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #weeklyCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Team utilization -->
+    <mat-card class="utilization-card">
+      <mat-card-header>
+        <mat-card-title>Team Utilization — This Week</mat-card-title>
+        <mat-card-subtitle>Hours logged vs allocated. Below 70% = under-utilised, above 100% = overloaded</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div *ngIf="data.teamUtilization.length === 0" class="empty-state-inline">
+          <mat-icon>info_outline</mat-icon>
+          <span>No active project members found</span>
+        </div>
+        <div class="utilization-list">
+          <div class="utilization-row" *ngFor="let m of data.teamUtilization">
+            <div class="member-name">{{ m.memberName }}</div>
+            <div class="utilization-bar-wrap">
+              <div
+                class="utilization-bar"
+                [style.width.%]="utilizationPct(m) > 100 ? 100 : utilizationPct(m)"
+                [style.backgroundColor]="utilizationColor(m)"
+              ></div>
+            </div>
+            <div class="utilization-pct" [style.color]="utilizationColor(m)">
+              {{ utilizationPct(m) }}%
+            </div>
+            <div class="utilization-detail">
+              {{ m.loggedHoursThisWeek | number: '1.1-1' }}h / {{ m.allocatedHoursPerWeek }}h
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

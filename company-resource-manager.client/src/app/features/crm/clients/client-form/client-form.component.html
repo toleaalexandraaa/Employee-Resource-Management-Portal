@@ -1,0 +1,36 @@
+<app-page-header [title]="(isEdit ? 'COMMON.EDIT' : 'CRM.NEW_CLIENT') | translate"></app-page-header>
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" style="flex:2">
+          <mat-label>{{ 'CRM.COMPANY' | translate }}</mat-label>
+          <input matInput formControlName="companyName" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.INDUSTRY' | translate }}</mat-label>
+          <input matInput formControlName="industry" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Website</mat-label>
+          <input matInput formControlName="website" />
+        </mat-form-field>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          {{ (isEdit ? 'COMMON.UPDATE' : 'COMMON.CREATE') | translate }}
+        </button>
+        <button mat-button type="button" routerLink="/crm/clients">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

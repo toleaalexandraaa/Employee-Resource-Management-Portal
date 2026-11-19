@@ -1,0 +1,26 @@
+<h2 mat-dialog-title>{{ 'CRM.CONVERT' | translate }}</h2>
+<mat-dialog-content>
+  @if (loading) {
+    <mat-spinner diameter="32"></mat-spinner>
+  } @else {
+    <mat-form-field appearance="outline" style="width: 100%; margin-top: 8px">
+      <mat-label>{{ 'CRM.ACCOUNT_MANAGER' | translate }}</mat-label>
+      <mat-select [value]="selectedAccountManagerId" (selectionChange)="selectedAccountManagerId = $event.value">
+        @for (e of employees; track e.id) {
+          <mat-option [value]="e.id">{{ e.fullName }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="!selectedAccountManagerId"
+    (click)="confirm()"
+  >
+    {{ 'CRM.CONVERT' | translate }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,22 @@
+<app-page-header [title]="'NAV.ML_INTELLIGENCE' | translate" subtitle="KMeans clustering and risk scoring powered by ML.NET">
+</app-page-header>
+
+<mat-tab-group>
+  <mat-tab [label]="'ANALYTICS.EMPLOYEE_CLUSTERS' | translate">
+    <div style="padding-top:16px">
+      <app-employee-clusters-tab></app-employee-clusters-tab>
+    </div>
+  </mat-tab>
+
+  <mat-tab [label]="'ANALYTICS.CLIENT_SEGMENTS' | translate">
+    <div style="padding-top:16px">
+      <app-client-segments-tab></app-client-segments-tab>
+    </div>
+  </mat-tab>
+
+  <mat-tab [label]="'ANALYTICS.PROJECT_RISK' | translate">
+    <div style="padding-top:16px">
+      <app-project-risk-tab></app-project-risk-tab>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,102 @@
+<div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+  <button mat-flat-button color="primary" (click)="showForm = !showForm">
+    <mat-icon>add</mat-icon> {{ 'PROJECTS.LOG_TIME' | translate }}
+  </button>
+</div>
+
+@if (showForm) {
+  <mat-card style="margin-bottom:16px">
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'PROJECTS.DATE' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dp" formControlName="date" />
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'PROJECTS.HOURS_LOGGED' | translate }}</mat-label>
+            <input matInput type="number" step="0.25" formControlName="hoursLogged" />
+            <mat-error>Must be between 0.25 and 24</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'PROJECTS.TASKS' | translate }}</mat-label>
+            <mat-select formControlName="taskId">
+              <mat-option [value]="null">— No task —</mat-option>
+              @for (task of tasks; track task.id) {
+                <mat-option [value]="task.id">{{ task.title }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" style="flex:2">
+            <mat-label>{{ 'PROJECTS.DESCRIPTION' | translate }}</mat-label>
+            <input matInput formControlName="description" />
+          </mat-form-field>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button mat-flat-button color="primary" type="submit">{{ 'COMMON.SAVE' | translate }}</button>
+          <button mat-button type="button" (click)="showForm = false">{{ 'COMMON.CANCEL' | translate }}</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+<mat-card>
+  <mat-card-content>
+    @if (loading) {
+      <div style="text-align:center;padding:32px">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+    @if (!loading) {
+      <table mat-table [dataSource]="entries">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.DATE' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.date }}</td>
+        </ng-container>
+        <ng-container matColumnDef="employeeName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.NAME' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.employeeName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="taskTitle">
+          <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.TASKS' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.taskTitle ?? '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="hoursLogged">
+          <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.HOURS_LOGGED' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.hoursLogged }}</td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>{{ 'PROJECTS.DESCRIPTION' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.description ?? '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+          <td mat-cell *matCellDef="let e">
+            <button mat-icon-button color="warn" (click)="delete(e)" [matTooltip]="'COMMON.DELETE' | translate">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td
+            class="mat-cell"
+            [attr.colspan]="displayedColumns.length"
+            style="text-align:center;padding:32px"
+          >
+            {{ 'PROJECTS.NO_TIME_ENTRIES' | translate }}
+          </td>
+        </tr>
+      </table>
+      @if (totalCount > entries.length) {
+        <div style="padding:8px;font-size:12px;color:#666">
+          Showing {{ entries.length }} of {{ totalCount }} entries.
+        </div>
+      }
+    }
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,118 @@
+<app-page-header [title]="'HR.PAYROLL' | translate" [subtitle]="'HR.PAYROLL_SUBTITLE' | translate">
+  <button mat-flat-button color="primary" (click)="showGenerateForm = !showGenerateForm">
+    <mat-icon>add</mat-icon> {{ 'HR.GENERATE_PAYROLL' | translate }}
+  </button>
+</app-page-header>
+
+@if (showGenerateForm) {
+<mat-card style="margin-bottom:16px">
+  <mat-card-header>
+    <mat-card-title>{{ 'HR.GENERATE_PAYROLL' | translate }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="generateForm" (ngSubmit)="generate()">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.EMPLOYEES' | translate }}</mat-label>
+          <mat-select formControlName="employeeId">
+            <mat-option *ngFor="let e of employees" [value]="e.id">{{ e.fullName }}</mat-option>
+          </mat-select>
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Month</mat-label>
+          <mat-select formControlName="month">
+            <mat-option *ngFor="let m of months" [value]="m.value">{{ m.label }}</mat-option>
+          </mat-select>
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Year</mat-label>
+          <input matInput type="number" formControlName="year" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.BONUSES' | translate }}</mat-label>
+          <input matInput type="number" formControlName="bonusAmount" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Meal Ticket Count</mat-label>
+          <input matInput type="number" formControlName="mealTicketCount" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Meal Ticket Value</mat-label>
+          <input matInput type="number" formControlName="mealTicketValue" />
+        </mat-form-field>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button mat-flat-button color="primary" type="submit">{{ 'HR.GENERATE_PAYROLL' | translate }}</button>
+        <button mat-button type="button" (click)="showGenerateForm = false">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+}
+
+<mat-card>
+  <mat-card-content>
+    @if (loading) {
+    <div style="text-align:center;padding:32px">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    }
+    @if (!loading) {
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="employeeName">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.NAME' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="period">
+        <th mat-header-cell *matHeaderCellDef>{{ 'HR.PAY_PERIOD' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.month }}/{{ r.year }}</td>
+      </ng-container>
+      <ng-container matColumnDef="grossSalary">
+        <th mat-header-cell *matHeaderCellDef>{{ 'HR.BASE_SALARY' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.grossSalary | number: '1.2-2' }} {{ r.currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="netSalary">
+        <th mat-header-cell *matHeaderCellDef>{{ 'HR.NET_PAY' | translate }}</th>
+        <td mat-cell *matCellDef="let r">{{ r.netSalary | number: '1.2-2' }} {{ r.currency }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+        <td mat-cell *matCellDef="let r">
+          <mat-chip [color]="r.status === 'Approved' ? 'primary' : 'accent'" [highlighted]="true">
+            {{ r.status }}
+          </mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+        <td mat-cell *matCellDef="let r">
+          @if (r.status === 'Draft') {
+          <button mat-icon-button color="primary" (click)="approve(r)" [matTooltip]="'HR.APPROVED' | translate">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          }
+          @if (r.status === 'Approved') {
+          <button mat-icon-button color="accent" (click)="markAsPaid(r)" matTooltip="Mark as Paid">
+            <mat-icon>payments</mat-icon>
+          </button>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align:center;padding:32px">
+          {{ 'COMMON.NO_DATA' | translate }}
+        </td>
+      </tr>
+    </table>
+    }
+    <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="[10, 25, 50]"
+                   (page)="onPage($event)"></mat-paginator>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,69 @@
+<app-page-header [title]="(isEdit ? 'COMMON.EDIT' : 'PROJECTS.NEW_PROJECT') | translate"></app-page-header>
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" style="flex:2">
+          <mat-label>{{ 'PROJECTS.PROJECT_NAME' | translate }}</mat-label>
+          <input matInput formControlName="name" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.STATUS' | translate }}</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline" style="flex:1">
+          <mat-label>{{ 'PROJECTS.CLIENT' | translate }}</mat-label>
+          <mat-select formControlName="clientId">
+            <mat-option [value]="null">-- Fără Client --</mat-option>
+            <mat-option *ngFor="let c of clients" [value]="c.id">{{ c.companyName }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'PROJECTS.DESCRIPTION' | translate }}</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+      </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PROJECTS.START_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PROJECTS.END_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PROJECTS.ESTIMATED_BUDGET' | translate }}</mat-label>
+          <input matInput type="number" formControlName="estimatedBudget" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'PROJECTS.ESTIMATED_DURATION' | translate }}</mat-label>
+          <input matInput type="number" formControlName="estimatedDurationDays" />
+        </mat-form-field>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          {{ (isEdit ? 'COMMON.UPDATE' : 'COMMON.CREATE') | translate }}
+        </button>
+        <button mat-button type="button" routerLink="/projects">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card style="margin-top:16px">
+  <mat-card-content>
+    <mat-accordion>
+      <app-estimation-widget [hasFixedDeadline]="!!form.get('endDate')?.value"></app-estimation-widget>
+    </mat-accordion>
+  </mat-card-content>
+</mat-card>

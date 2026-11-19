@@ -1,0 +1,114 @@
+<app-page-header [title]="'ANALYTICS.OVERVIEW' | translate" subtitle="Key performance indicators"></app-page-header>
+
+<div *ngIf="loading" class="spinner-wrap">
+  <mat-spinner diameter="48"></mat-spinner>
+</div>
+
+<div *ngIf="error" class="error-wrap">
+  <mat-icon color="warn">error_outline</mat-icon>
+  <p>Failed to load analytics data.</p>
+</div>
+
+<ng-container *ngIf="!loading && !error && kpi">
+  <!-- ── KPI Cards ──────────────────────────────────────────────────────── -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" color="primary">people</mat-icon>
+        <div class="kpi-value">{{ kpi.activeEmployees }}</div>
+        <div class="kpi-label">{{ 'ANALYTICS.TOTAL_EMPLOYEES' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" color="primary">payments</mat-icon>
+        <div class="kpi-value">{{ kpi.payrollThisMonth | number: '1.0-0' }}</div>
+        <div class="kpi-label">Payroll This Month (RON)</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" color="primary">work</mat-icon>
+        <div class="kpi-value">{{ kpi.activeProjects }}</div>
+        <div class="kpi-label">{{ 'ANALYTICS.ACTIVE_PROJECTS' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" [color]="kpi.budgetVariancePct > 0 ? 'warn' : 'primary'">
+          {{ kpi.budgetVariancePct > 0 ? 'trending_up' : 'trending_down' }}
+        </mat-icon>
+        <div class="kpi-value" [class]="budgetVarianceClass">{{ budgetVarianceLabel }}</div>
+        <div class="kpi-label">Budget Variance</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" color="accent">trending_up</mat-icon>
+        <div class="kpi-value">{{ kpi.openLeadsCount }}</div>
+        <div class="kpi-sub">{{ kpi.openLeadsValue | number: '1.0-0' }} RON pipeline</div>
+        <div class="kpi-label">Open Leads</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" color="accent">attach_money</mat-icon>
+        <div class="kpi-value">{{ kpi.revenueThisMonth | number: '1.0-0' }}</div>
+        <div class="kpi-label">{{ 'ANALYTICS.TOTAL_REVENUE' | translate }} (RON)</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card" [class.kpi-card--warn]="kpi.overdueInvoicesCount > 0">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" [color]="kpi.overdueInvoicesCount > 0 ? 'warn' : 'primary'">
+          receipt_long
+        </mat-icon>
+        <div class="kpi-value" [class.warn]="kpi.overdueInvoicesCount > 0">
+          {{ kpi.overdueInvoicesCount }}
+        </div>
+        <div class="kpi-sub">{{ kpi.overdueInvoicesAmount | number: '1.0-0' }} RON</div>
+        <div class="kpi-label">Overdue Invoices</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card" [class.kpi-card--warn]="kpi.pendingLeaveRequests > 0">
+      <mat-card-content>
+        <mat-icon class="kpi-icon" [color]="kpi.pendingLeaveRequests > 0 ? 'warn' : 'primary'">
+          event_busy
+        </mat-icon>
+        <div class="kpi-value" [class.warn]="kpi.pendingLeaveRequests > 0">
+          {{ kpi.pendingLeaveRequests }}
+        </div>
+        <div class="kpi-label">{{ 'DASHBOARD.PENDING_LEAVES' | translate }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- ── Charts ────────────────────────────────────────────────────────── -->
+  <div class="charts-grid">
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>Revenue — Last 12 Months</mat-card-title>
+        <mat-card-subtitle>Paid invoices (RON)</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="chart-content">
+        <canvas #revenueCanvas></canvas>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>New Hires — Last 6 Months</mat-card-title>
+        <mat-card-subtitle>Employees hired per month</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="chart-content">
+        <canvas #hiresCanvas></canvas>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</ng-container>

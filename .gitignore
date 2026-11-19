@@ -1,0 +1,26 @@
+
+# Angular
+**/node_modules/
+**/.angular/
+**/dist/
+**/coverage/
+
+# Visual Studio / .NET
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# Date locale si secrete
+**/.env
+**/.env.*
+**/appsettings.Development.json
+**/secrets.json
+
+# Sistem de operare
+Thumbs.db
+.DS_Store
+
+# Setari locale
+.claude/

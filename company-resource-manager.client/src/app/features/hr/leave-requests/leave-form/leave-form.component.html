@@ -1,0 +1,39 @@
+<app-page-header [title]="'HR.NEW_LEAVE' | translate"></app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.LEAVE_TYPE' | translate }}</mat-label>
+          <mat-select formControlName="leaveType">
+            <mat-option *ngFor="let t of leaveTypes" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.START_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.END_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'HR.REASON' | translate }}</mat-label>
+        <textarea matInput formControlName="reason" rows="3"></textarea>
+      </mat-form-field>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">{{ 'COMMON.SAVE' | translate }}</button>
+        <button mat-button type="button" routerLink="/hr/leave-requests">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,160 @@
+.tab-content {
+  padding: 16px 0;
+}
+
+.spinner-wrap,
+.error-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+  gap: 12px;
+}
+
+.kpi-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.kpi-card {
+  flex: 1;
+  min-width: 150px;
+}
+
+.kpi-card mat-card-content {
+  padding: 16px;
+  text-align: center;
+}
+
+.kpi-value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  color: #ef5350;
+}
+
+.kpi-value--sm {
+  font-size: 24px;
+  color: #fb8c00;
+}
+
+.kpi-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
+  margin-top: 4px;
+}
+
+.kpi-outstanding {
+  border-left: 4px solid #ef5350;
+}
+
+.kpi-status {
+  border-left: 4px solid #fb8c00;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-card--wide {
+  grid-column: 1 / -1;
+}
+
+.chart-content {
+  height: 260px;
+  position: relative;
+  padding: 8px;
+}
+
+.chart-content--tall {
+  height: 320px;
+}
+
+.chart-content canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.38);
+  gap: 8px;
+}
+
+.empty-state-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* Invoice aging */
+.aging-card {
+  margin-top: 0;
+}
+
+.aging-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 0 8px;
+}
+
+.aging-bucket {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+}
+
+.aging-bucket--empty {
+  opacity: 0.4;
+}
+
+.aging-bar-wrap {
+  height: 60px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.aging-bar-fill {
+  width: 100%;
+  border-radius: 4px;
+  min-height: 4px;
+  transition: height 0.3s ease;
+}
+
+.aging-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.aging-count {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.aging-amount {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.54);
+}

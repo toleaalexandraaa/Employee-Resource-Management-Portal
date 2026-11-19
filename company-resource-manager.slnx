@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="company-resource-manager.client/company-resource-manager.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="company-resource-manager.Server/company-resource-manager.Server.csproj" />
+  <Project Path="company-resource-manager.Tests/company-resource-manager.Tests.csproj">
+    <Build />
+  </Project>
+</Solution>

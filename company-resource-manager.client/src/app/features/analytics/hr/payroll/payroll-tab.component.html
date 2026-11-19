@@ -1,0 +1,77 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load payroll data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- Status cards (current month) -->
+    <div class="status-cards">
+      <mat-card class="status-card status-draft">
+        <mat-card-content>
+          <div class="status-value">{{ data.currentMonthDraft }}</div>
+          <div class="status-label">{{ 'CRM.DRAFT' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="status-card status-approved">
+        <mat-card-content>
+          <div class="status-value">{{ data.currentMonthApproved }}</div>
+          <div class="status-label">{{ 'HR.APPROVED' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="status-card status-paid">
+        <mat-card-content>
+          <div class="status-value">{{ data.currentMonthPaid }}</div>
+          <div class="status-label">{{ 'CRM.PAID' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="status-card status-total">
+        <mat-card-content>
+          <div class="status-value">{{ totalThisMonth }}</div>
+          <div class="status-label">Total (this month)</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+      <mat-card class="chart-card chart-card--wide">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.PAYROLL_ANALYSIS' | translate }} — Last 12 Months</mat-card-title>
+          <mat-card-subtitle>Total net salary paid (RON)</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #costCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.AVG_SALARY' | translate }} by {{ 'HR.DEPARTMENT' | translate }}</mat-card-title>
+          <mat-card-subtitle>Active contracts (RON)</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #salaryCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Payroll Composition</mat-card-title>
+          <mat-card-subtitle>Average split — Net / Tax / Social</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div *ngIf="data.composition.avgNet === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No approved/paid payroll this month</p>
+          </div>
+          <canvas #compositionCanvas *ngIf="data.composition.avgNet > 0"></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,48 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="menuToggle.emit()" [aria-label]="'NAV.DASHBOARD' | translate">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="spacer"></span>
+
+  <button mat-button (click)="toggleLanguage()">
+    {{ currentLang === 'ro' ? 'EN' : 'RO' }}
+  </button>
+
+  <button mat-icon-button [matMenuTriggerFor]="notifMenu" [aria-label]="'TOOLBAR.NO_NOTIFICATIONS' | translate">
+    <mat-icon [matBadge]="unreadCount || null" matBadgeColor="accent">notifications</mat-icon>
+  </button>
+  <mat-menu #notifMenu="matMenu">
+    @if (notifications.length === 0) {
+      <div style="padding: 16px; color: #666;">
+        {{ 'TOOLBAR.NO_NOTIFICATIONS' | translate }}
+      </div>
+    }
+    <button mat-menu-item *ngFor="let n of notifications" (click)="markRead(n.id)">
+      <mat-icon [style.color]="n.isRead ? '#aaa' : ''">{{ n.isRead ? 'drafts' : 'mail' }}</mat-icon>
+      <span>{{ n.title }}</span>
+    </button>
+    @if (notifications.length > 0 && unreadCount > 0) {
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="markAllRead()">
+        <mat-icon>done_all</mat-icon>
+        <span>{{ 'TOOLBAR.MARK_ALL_READ' | translate }}</span>
+      </button>
+    }
+  </mat-menu>
+
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" [aria-label]="'COMMON.ACTIONS' | translate">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item disabled>{{ userName }}</button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="openChangePassword()">
+      <mat-icon>lock</mat-icon>
+      <span>{{ 'TOOLBAR.CHANGE_PASSWORD' | translate }}</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>{{ 'TOOLBAR.LOGOUT' | translate }}</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

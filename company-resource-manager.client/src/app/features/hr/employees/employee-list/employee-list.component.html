@@ -1,0 +1,70 @@
+<app-page-header [title]="'HR.EMPLOYEES' | translate" [subtitle]="'HR.EMPLOYEES_SUBTITLE' | translate">
+  <button mat-flat-button color="primary" routerLink="/hr/employees/new">
+    <mat-icon>add</mat-icon> {{ 'HR.NEW_EMPLOYEE' | translate }}
+  </button>
+</app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading) {
+      <div style="text-align:center;padding:32px">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+    @if (!loading) {
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.NAME' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.fullName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>{{ 'HR.DEPARTMENT' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.department }}</td>
+        </ng-container>
+        <ng-container matColumnDef="jobTitle">
+          <th mat-header-cell *matHeaderCellDef>{{ 'HR.JOB_TITLE' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.jobTitle }}</td>
+        </ng-container>
+        <ng-container matColumnDef="workEmail">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.EMAIL' | translate }}</th>
+          <td mat-cell *matCellDef="let e">{{ e.workEmail }}</td>
+        </ng-container>
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+          <td mat-cell *matCellDef="let e">
+            <mat-chip [color]="e.isActive ? 'primary' : undefined" [highlighted]="e.isActive">
+              {{ (e.isActive ? 'COMMON.ACTIVE' : 'COMMON.INACTIVE') | translate }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+          <td mat-cell *matCellDef="let e">
+            <button mat-icon-button [routerLink]="['/hr/employees', e.id]" [matTooltip]="'COMMON.VIEW' | translate">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button [routerLink]="['/hr/employees', e.id, 'edit']" [matTooltip]="'COMMON.EDIT' | translate">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="delete(e)" [matTooltip]="'COMMON.DELETE' | translate">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align:center;padding:32px">
+            {{ 'HR.NO_EMPLOYEES' | translate }}
+          </td>
+        </tr>
+      </table>
+    }
+    <mat-paginator
+      [length]="totalCount"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPage($event)"
+    ></mat-paginator>
+  </mat-card-content>
+</mat-card>

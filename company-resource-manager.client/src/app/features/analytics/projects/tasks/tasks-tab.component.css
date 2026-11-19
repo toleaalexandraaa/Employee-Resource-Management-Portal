@@ -1,0 +1,81 @@
+.tab-content {
+  padding: 16px 0;
+}
+
+.spinner-wrap,
+.error-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+  gap: 12px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-content {
+  height: 260px;
+  position: relative;
+  padding: 8px;
+}
+
+.chart-content canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.38);
+  gap: 8px;
+}
+
+/* WIP Violations */
+.wip-card {
+  margin-top: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+  margin-left: 8px;
+}
+
+.badge--warn {
+  background: #f44336;
+  color: #fff;
+}
+
+.wip-table {
+  width: 100%;
+}
+
+.over-limit {
+  color: #ef5350;
+  font-weight: 700;
+}
+
+.empty-state-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+  color: rgba(0, 0, 0, 0.54);
+}

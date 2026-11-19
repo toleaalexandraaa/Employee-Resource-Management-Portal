@@ -1,0 +1,85 @@
+<app-page-header [title]="'CRM.NEW_INVOICE' | translate"></app-page-header>
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Client ID</mat-label>
+          <input matInput formControlName="clientId" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.DUE_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="duePicker" formControlName="dueDate" />
+          <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+          <mat-datepicker #duePicker></mat-datepicker>
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.TAX_RATE' | translate }}</mat-label>
+          <input matInput type="number" step="0.01" formControlName="taxRate" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Currency</mat-label>
+          <input matInput formControlName="currency" />
+        </mat-form-field>
+      </div>
+
+      <h3>{{ 'CRM.LINE_ITEMS' | translate }}</h3>
+      <div formArrayName="lineItems">
+        <div
+          *ngFor="let item of lineItems.controls; let i = index"
+          [formGroupName]="i"
+          class="form-row"
+          style="align-items:center"
+        >
+          <mat-form-field appearance="outline" style="flex:3">
+            <mat-label>{{ 'CRM.DESCRIPTION' | translate }}</mat-label>
+            <input matInput formControlName="description" />
+            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'CRM.QUANTITY' | translate }}</mat-label>
+            <input matInput type="number" step="0.01" formControlName="quantity" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'CRM.UNIT_PRICE' | translate }}</mat-label>
+            <input matInput type="number" step="0.01" formControlName="unitPrice" />
+          </mat-form-field>
+          <div style="min-width:80px;text-align:right">{{ lineTotal(i) | number:'1.2-2' }}</div>
+          <button
+            mat-icon-button
+            color="warn"
+            type="button"
+            (click)="removeLineItem(i)"
+            [disabled]="lineItems.length === 1"
+          >
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+        </div>
+      </div>
+      <button mat-button type="button" (click)="addLineItem()">
+        <mat-icon>add</mat-icon> {{ 'CRM.ADD_LINE' | translate }}
+      </button>
+
+      <div style="text-align:right;margin-top:16px;font-size:14px">
+        <div>{{ 'CRM.SUBTOTAL' | translate }}: {{ subTotal | number:'1.2-2' }}</div>
+        <div>
+          {{ 'CRM.TAX_RATE' | translate }} ({{ (form.get('taxRate')?.value || 0) * 100 | number:'1.0-0' }}%):
+          {{ subTotal * (form.get('taxRate')?.value || 0) | number:'1.2-2' }}
+        </div>
+        <strong>
+          {{ 'CRM.TOTAL' | translate }}: {{ subTotal * (1 + (form.get('taxRate')?.value || 0)) | number:'1.2-2' }}
+          {{ form.get('currency')?.value }}
+        </strong>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          {{ 'COMMON.CREATE' | translate }}
+        </button>
+        <button mat-button type="button" routerLink="/crm/invoices">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

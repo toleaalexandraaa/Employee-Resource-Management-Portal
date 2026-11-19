@@ -1,0 +1,104 @@
+<app-page-header [title]="(isEdit ? 'COMMON.EDIT' : 'HR.NEW_EMPLOYEE') | translate"></app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.FIRST_NAME' | translate }}</mat-label>
+          <input matInput formControlName="firstName" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.LAST_NAME' | translate }}</mat-label>
+          <input matInput formControlName="lastName" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.PERSONAL_EMAIL' | translate }}</mat-label>
+          <input matInput type="email" formControlName="personalEmail" />
+          <mat-error>{{ 'COMMON.INVALID_EMAIL' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.WORK_EMAIL' | translate }}</mat-label>
+          <input matInput type="email" formControlName="workEmail" />
+          <mat-error>{{ 'COMMON.INVALID_EMAIL' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.PHONE' | translate }}</mat-label>
+          <input matInput formControlName="phone" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.DEPARTMENT' | translate }}</mat-label>
+          <input matInput formControlName="department" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.JOB_TITLE' | translate }}</mat-label>
+          <input matInput formControlName="jobTitle" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.BIRTH_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="birthPicker" formControlName="birthDate" />
+          <mat-datepicker-toggle matSuffix [for]="birthPicker"></mat-datepicker-toggle>
+          <mat-datepicker #birthPicker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.HIRE_DATE' | translate }}</mat-label>
+          <input matInput [matDatepicker]="hirePicker" formControlName="hireDate" />
+          <mat-datepicker-toggle matSuffix [for]="hirePicker"></mat-datepicker-toggle>
+          <mat-datepicker #hirePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.SENIORITY' | translate }}</mat-label>
+          <input matInput type="number" formControlName="seniorityYears" min="0" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'HR.MANAGER' | translate }}</mat-label>
+          <mat-select formControlName="managerId">
+            <mat-option [value]="null">— {{ 'HR.NO_MANAGER' | translate }} —</mat-option>
+            @for (m of managers; track m.id) {
+              <mat-option [value]="m.id">{{ m.fullName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        @if (!isEdit) {
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'HR.ROLE' | translate }}</mat-label>
+            <mat-select formControlName="role">
+              @for (r of roles; track r) {
+                <mat-option [value]="r">{{ r }}</mat-option>
+              }
+            </mat-select>
+            <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+          </mat-form-field>
+        }
+        @if (isEdit) {
+          <mat-checkbox formControlName="isActive">{{ 'COMMON.ACTIVE' | translate }}</mat-checkbox>
+        }
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          @if (loading) {
+            <mat-spinner diameter="20" style="display:inline-block"></mat-spinner>
+          }
+          {{ (isEdit ? 'COMMON.UPDATE' : 'COMMON.CREATE') | translate }}
+        </button>
+        <button mat-button type="button" routerLink="/hr/employees">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

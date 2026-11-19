@@ -1,0 +1,52 @@
+<app-page-header [title]="(isEdit ? 'COMMON.EDIT' : 'CRM.NEW_LEAD') | translate"></app-page-header>
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" style="flex: 2">
+          <mat-label>{{ 'CRM.COMPANY' | translate }}</mat-label>
+          <input matInput formControlName="companyName" />
+          <mat-error>{{ 'COMMON.REQUIRED' | translate }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.EST_VALUE' | translate }}</mat-label>
+          <input matInput type="number" formControlName="estimatedValue" />
+        </mat-form-field>
+      </div>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.CONTACT' | translate }}</mat-label>
+          <input matInput formControlName="contactName" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.EMAIL' | translate }}</mat-label>
+          <input matInput type="email" formControlName="contactEmail" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'COMMON.PHONE' | translate }}</mat-label>
+          <input matInput formControlName="contactPhone" />
+        </mat-form-field>
+      </div>
+      @if (isEdit) {
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'CRM.STAGE' | translate }}</mat-label>
+          <mat-select formControlName="stage">
+            @for (s of stages; track s) {
+              <mat-option [value]="s">{{ s }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+      </mat-form-field>
+      <div style="display: flex; gap: 8px; margin-top: 8px">
+        <button mat-flat-button color="primary" type="submit" [disabled]="loading">
+          {{ (isEdit ? 'COMMON.UPDATE' : 'COMMON.CREATE') | translate }}
+        </button>
+        <button mat-button type="button" routerLink="/crm/leads">{{ 'COMMON.CANCEL' | translate }}</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

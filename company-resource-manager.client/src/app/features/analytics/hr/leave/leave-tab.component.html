@@ -1,0 +1,112 @@
+<div class="tab-content">
+  <div *ngIf="loading" class="spinner-wrap">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <div *ngIf="error" class="error-wrap">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>Failed to load leave data.</p>
+  </div>
+
+  <ng-container *ngIf="!loading && !error && data">
+    <!-- Charts row -->
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.LEAVE_ANALYSIS' | translate }}</mat-card-title>
+          <mat-card-subtitle>Used vs. remaining days by leave type</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #balanceCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'ANALYTICS.LEAVE_DAYS' | translate }} by Month — Last 12 Months</mat-card-title>
+          <mat-card-subtitle>Approved working days per leave type</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <canvas #monthCanvas></canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Pending requests + heatmap row -->
+    <div class="bottom-grid">
+      <!-- Pending requests table -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            {{ 'HR.PENDING' | translate }} Requests
+            <span class="badge" [class.badge--warn]="data.pendingCount > 0">{{ data.pendingCount }}</span>
+          </mat-card-title>
+          <mat-card-subtitle>Oldest first — awaiting approval</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="data.pendingRequests.length === 0" class="empty-state">
+            <mat-icon>check_circle_outline</mat-icon>
+            <p>No pending requests</p>
+          </div>
+          <table mat-table [dataSource]="data.pendingRequests" *ngIf="data.pendingRequests.length > 0" class="pending-table">
+            <ng-container matColumnDef="employeeName">
+              <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.NAME' | translate }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.employeeName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="leaveType">
+              <th mat-header-cell *matHeaderCellDef>{{ 'HR.LEAVE_TYPE' | translate }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.leaveType }}</td>
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+              <th mat-header-cell *matHeaderCellDef>{{ 'HR.START_DATE' | translate }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.startDate }}</td>
+            </ng-container>
+            <ng-container matColumnDef="endDate">
+              <th mat-header-cell *matHeaderCellDef>{{ 'HR.END_DATE' | translate }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.endDate }}</td>
+            </ng-container>
+            <ng-container matColumnDef="workingDays">
+              <th mat-header-cell *matHeaderCellDef>Days</th>
+              <td mat-cell *matCellDef="let row">{{ row.workingDays }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Department heatmap -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Leave by {{ 'HR.DEPARTMENT' | translate }} — Last 6 Months</mat-card-title>
+          <mat-card-subtitle>Total approved working days</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="data.leaveByDepartment.length === 0" class="empty-state">
+            <mat-icon>info_outline</mat-icon>
+            <p>No approved leave data</p>
+          </div>
+          <div class="heatmap-wrap" *ngIf="data.leaveByDepartment.length > 0">
+            <table class="heatmap-table">
+              <thead>
+                <tr>
+                  <th class="dept-col">{{ 'HR.DEPARTMENT' | translate }}</th>
+                  <th *ngFor="let m of data.heatmapMonthLabels" class="month-col">{{ m }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of data.leaveByDepartment">
+                  <td class="dept-cell">{{ row.department }}</td>
+                  <td *ngFor="let val of row.values" class="heat-cell"
+                      [style.backgroundColor]="heatmapColor(val, heatmapMax(data))">
+                    {{ val > 0 ? val : '' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+</div>

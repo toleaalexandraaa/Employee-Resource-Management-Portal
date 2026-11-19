@@ -1,0 +1,105 @@
+.tab-content {
+  padding: 16px 0;
+}
+
+.spinner-wrap,
+.error-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0;
+  gap: 12px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-card mat-card-content.chart-content {
+  height: 260px;
+  position: relative;
+  padding: 8px;
+}
+
+.chart-content canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 16px;
+}
+
+/* Pending table */
+.pending-table {
+  width: 100%;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  color: rgba(0, 0, 0, 0.4);
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background: rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+  margin-left: 8px;
+}
+
+.badge--warn {
+  background: #f44336;
+  color: #fff;
+}
+
+/* Heatmap */
+.heatmap-wrap {
+  overflow-x: auto;
+}
+
+.heatmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.heatmap-table th,
+.heatmap-table td {
+  padding: 6px 10px;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dept-col,
+.dept-cell {
+  text-align: left;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.month-col {
+  font-weight: 500;
+  min-width: 72px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.heat-cell {
+  min-width: 72px;
+  transition: background-color 0.2s;
+}

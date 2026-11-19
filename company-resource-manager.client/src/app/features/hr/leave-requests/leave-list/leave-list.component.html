@@ -1,0 +1,90 @@
+<app-page-header [title]="'HR.LEAVE_REQUESTS' | translate" [subtitle]="'HR.LEAVE_SUBTITLE' | translate">
+  <button mat-flat-button color="primary" routerLink="/hr/leave-requests/new">
+    <mat-icon>add</mat-icon> {{ 'HR.NEW_LEAVE' | translate }}
+  </button>
+</app-page-header>
+
+<mat-card>
+  <mat-card-content>
+    @if (loading) {
+      <div style="text-align:center;padding:32px">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
+    @if (!loading) {
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="employeeName">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.NAME' | translate }}</th>
+          <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="leaveType">
+          <th mat-header-cell *matHeaderCellDef>{{ 'HR.LEAVE_TYPE' | translate }}</th>
+          <td mat-cell *matCellDef="let r">{{ r.leaveType }}</td>
+        </ng-container>
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef>{{ 'HR.START_DATE' | translate }}</th>
+          <td mat-cell *matCellDef="let r">{{ r.startDate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef>{{ 'HR.END_DATE' | translate }}</th>
+          <td mat-cell *matCellDef="let r">{{ r.endDate }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.STATUS' | translate }}</th>
+          <td mat-cell *matCellDef="let r">
+            <mat-chip [color]="statusColors[r.status]" [highlighted]="r.status !== 'Cancelled'">
+              {{ r.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'COMMON.ACTIONS' | translate }}</th>
+          <td mat-cell *matCellDef="let r">
+            @if (r.status === 'Pending' && canApproveReject) {
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="approve(r)"
+                [matTooltip]="'HR.APPROVED' | translate"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            }
+            @if (r.status === 'Pending' && canApproveReject) {
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="reject(r)"
+                [matTooltip]="'HR.REJECTED' | translate"
+              >
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
+            @if (r.status === 'Pending' && canCancel) {
+              <button
+                mat-icon-button
+                (click)="cancel(r)"
+                [matTooltip]="'COMMON.CANCEL' | translate"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length" style="text-align:center;padding:32px">
+            {{ 'HR.NO_LEAVES' | translate }}
+          </td>
+        </tr>
+      </table>
+    }
+    <mat-paginator
+      [length]="totalCount"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPage($event)"
+    ></mat-paginator>
+  </mat-card-content>
+</mat-card>

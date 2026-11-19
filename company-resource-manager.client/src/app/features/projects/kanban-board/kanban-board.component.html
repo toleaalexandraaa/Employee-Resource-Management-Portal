@@ -1,0 +1,84 @@
+@if (loading) {
+  <div style="text-align:center;padding:32px">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+}
+
+@if (board && !loading) {
+  <div class="board" cdkDropListGroup>
+    <div class="column" *ngFor="let col of board.columns">
+      <div class="column-header">
+        <span class="column-title">{{ col.name }}</span>
+        <mat-chip>{{ col.tasks.length }}</mat-chip>
+      </div>
+
+      <div
+        class="task-list"
+        cdkDropList
+        [cdkDropListData]="col.tasks"
+        [id]="col.id"
+        [cdkDropListConnectedTo]="columnIds"
+        (cdkDropListDropped)="drop($event, col)"
+      >
+        <mat-card class="task-card" *ngFor="let task of col.tasks" cdkDrag>
+          <mat-card-content>
+            <div class="task-header">
+              <span class="task-title">{{ task.title }}</span>
+              <span
+                class="priority-dot"
+                [style.background]="priorityColor(task.priority)"
+                [matTooltip]="task.priority"
+              ></span>
+            </div>
+            @if (task.assignedToEmployeeName || task.dueDate) {
+              <div class="task-footer">
+                @if (task.assignedToEmployeeName) {
+                  <span class="assignee">{{ task.assignedToEmployeeName }}</span>
+                }
+                @if (task.dueDate) {
+                  <span class="due-date">{{ task.dueDate }}</span>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <div *cdkDragPlaceholder class="drag-placeholder"></div>
+      </div>
+
+      @if (addingTaskInColumn === col.id) {
+        <div class="add-task-area">
+          <mat-form-field appearance="outline" class="full-width" style="margin-bottom:4px">
+            <input
+              matInput
+              [placeholder]="'PROJECTS.TASK_TITLE' | translate"
+              [formControl]="newTaskTitleControl"
+              (keydown.enter)="confirmAddTask(col)"
+              (keydown.escape)="cancelAddTask()"
+            />
+          </mat-form-field>
+          <div style="display:flex;gap:4px">
+            <button mat-flat-button color="primary" (click)="confirmAddTask(col)">{{ 'PROJECTS.ADD_TASK' | translate }}</button>
+            <button mat-button (click)="cancelAddTask()">{{ 'COMMON.CANCEL' | translate }}</button>
+          </div>
+        </div>
+      }
+
+      @if (addingTaskInColumn !== col.id) {
+        <button
+          mat-button
+          class="add-task-btn"
+          (click)="startAddTask(col.id)"
+        >
+          <mat-icon>add</mat-icon> {{ 'PROJECTS.ADD_TASK' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+}
+
+@if (!board && !loading) {
+  <div style="text-align:center;padding:32px;color:#666">
+    {{ 'COMMON.NO_DATA' | translate }}
+  </div>
+}
